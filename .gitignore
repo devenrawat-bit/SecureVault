@@ -1,0 +1,27 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+
+# Build output
+**/bin/
+**/obj/
+
+# User-specific files
+*.user
+*.rsuser
+
+# Logs
+*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test results
+TestResults/
+*.trx
+
+# ReSharper
+_ReSharper*/
+*.[Rr]e[Ss]harper
