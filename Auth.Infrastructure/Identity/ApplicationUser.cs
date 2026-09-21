@@ -1,19 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
+﻿using Microsoft.AspNetCore.Identity;
 
-namespace Auth.Domain.Entities
+namespace Auth.Infrastructure.Identity
 {
-    public class User
+    public class ApplicationUser: IdentityUser<Guid>
     {
-        public Guid Id { get; set; }
-
-        public string Email { get; set; } = string.Empty;
-
         public string FirstName { get; set; } = string.Empty;
 
         public string LastName { get; set; } = string.Empty;
 
+        /// <summary>
+        /// This is here intentionally and the auth service is having its own presence of this property and the organisation service will have its own 
+        /// </summary>
         public Guid OrganizationId { get; set; }
 
         public bool IsActive { get; set; } = true;
