@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Organization.Application.Interfaces;
+using Organization.Infrastructure.Messaging;
 using Organization.Infrastructure.Persistence;
 using Organization.Infrastructure.Services;
 
@@ -23,7 +24,11 @@ public static class DependencyInjection
             options.UseSqlServer(
                 configuration.GetConnectionString("DefaultConnection")));
 
+        services.Configure<RabbitMqSettings>(
+         configuration.GetSection("RabbitMQ"));
+
         services.AddScoped<IOrganizationService, OrganizationService>();
+        services.AddScoped<IEventPublisher, EventService>();
 
         return services;
     }
