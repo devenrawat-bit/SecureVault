@@ -11,7 +11,7 @@ namespace Auth.Infrastructure.Identity
         /// <summary>
         /// This is here intentionally and the auth service is having its own presence of this property and the organisation service will have its own 
         /// </summary>
-        public Guid OrganizationId { get; set; }
+        public Guid? OrganizationId { get; set; }
 
         public bool IsActive { get; set; } = true;
 

@@ -65,6 +65,7 @@ public static class DependencyInjection
         services.AddAuthorization();
 
         services.AddScoped<IInvitationService, InvitationService>();
+        services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<JwtTokenService>();
         return services;
     }

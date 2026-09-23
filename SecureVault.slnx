@@ -3,4 +3,8 @@
   <Project Path="Auth.Application/Auth.Application.csproj" />
   <Project Path="Auth.Domain/Auth.Domain.csproj" />
   <Project Path="Auth.Infrastructure/Auth.Infrastructure.csproj" />
+  <Project Path="Organization.API/Organization.API.csproj" Id="bc2ce1b7-f2ec-4699-8e5e-40932c483c2a" />
+  <Project Path="Organization.Application/Organization.Application.csproj" Id="4efe207f-7e26-4fce-a454-5b310ab129e6" />
+  <Project Path="Organization.Domain/Organization.Domain.csproj" Id="ba62d97b-80a1-4e37-bf06-fac5c51b4ab2" />
+  <Project Path="Organization.Infrastructure/Organization.Infrastructure.csproj" Id="bd4585c6-1e6a-407b-87d4-4fc9c8340d67" />
 </Solution>

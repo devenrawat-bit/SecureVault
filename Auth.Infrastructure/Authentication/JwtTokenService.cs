@@ -10,7 +10,7 @@ namespace Auth.Infrastructure.Authentication;
 
 public class JwtTokenService
 {
-    private readonly JwtSettings _jwtSettings;
+    private readonly JwtSettings _jwtSettings; //here the jwt settings class represents this 
     private readonly UserManager<ApplicationUser> _userManager;
 
     public JwtTokenService(
@@ -21,20 +21,30 @@ public class JwtTokenService
         _userManager = userManager;
     }
 
-    public async Task<string> GenerateTokenAsync(ApplicationUser user)
+    /// <summary>
+    /// This will generate the token for the user 
+    /// </summary>dotnet user-secrets list --project Auth.API
+    /// <param name="user">The data for the logged in user </param>
+    /// <returns>String token </returns>
+    public async Task<string> GenerateTokenAsync(ApplicationUser user) 
     {
-        var roles = await _userManager.GetRolesAsync(user);
+        var roles = await _userManager.GetRolesAsync(user); //fetches all the roles that are assigned to that user 
 
+        //building the payload claims
         var claims = new List<Claim>
         {
-            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
-            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty),
-
-            // This is the important tenant claim
-            new("OrganizationId", user.OrganizationId.ToString()),
-
+            new(JwtRegisteredClaimNames.Sub, user.Id.ToString()), //storing the id 
+            new(JwtRegisteredClaimNames.Email, user.Email ?? string.Empty), //storing the 
             new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
         };
+
+        if (user.OrganizationId.HasValue) //the has value property only applies on the nullable type, and here if the orgid is null then it wont be added in the jwt 
+        {
+            claims.Add(
+                new Claim(
+                    "OrganizationId",
+                    user.OrganizationId.Value.ToString()));
+        }
 
         foreach (var role in roles)
         {
