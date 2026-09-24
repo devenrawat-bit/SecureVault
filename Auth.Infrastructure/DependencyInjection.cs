@@ -1,15 +1,17 @@
 ﻿using Auth.Application.Interfaces;
 using Auth.Infrastructure.Authentication;
 using Auth.Infrastructure.Identity;
+using Auth.Infrastructure.Messaging;
 using Auth.Infrastructure.Persistence;
 using Auth.Infrastructure.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using Microsoft.Extensions.Options;
 
 namespace Auth.Infrastructure;
 
@@ -61,6 +63,11 @@ public static class DependencyInjection
                         Encoding.UTF8.GetBytes(jwtSettings.Key))
                 };
             });
+
+        //for the rabbit mq settings
+        services.Configure<RabbitMqSettings>(
+        configuration.GetSection("RabbitMQ")); //this will map the RabbitMqSettings class to the RabbitMQ section in the appsettings.json file
+        services.AddHostedService<RabbitMqConsumer>();
 
         services.AddAuthorization();
 
