@@ -56,7 +56,7 @@ public class InvitationService : IInvitationService
             FirstName = request.FirstName,
             LastName = request.LastName,
             Role = role,
-            TokenHash = tokenHash,
+            TokenHash = tokenHash, //storing the hash in the db, and not the real token itself 
             ExpiresAt = DateTime.UtcNow.AddHours(24),
             CreatedAt = DateTime.UtcNow
         };
@@ -75,6 +75,13 @@ public class InvitationService : IInvitationService
         };
     }
 
+    /// <summary>
+    /// The above invitation is for the admin that freshely starts the organization, but this one is for the workers that are working in the organzation apart from the admin role like developers, qa, team lead etc...
+    /// </summary>
+    /// <param name="request"></param>
+    /// <param name="organizationId"></param>
+    /// <returns></returns>
+    /// <exception cref="InvalidOperationException"></exception>
     public async Task<InvitationCreatedResponse> CreateInvitationAsync(
         CreateInvitationRequest request,
         Guid organizationId)
@@ -101,7 +108,7 @@ public class InvitationService : IInvitationService
             FirstName = request.FirstName,
             LastName = request.LastName,
             Role = request.Role,
-            TokenHash = tokenHash,
+            TokenHash = tokenHash, //hash token instead of the raw token in the db for the security reasons.
             ExpiresAt = DateTime.UtcNow.AddHours(24),
             CreatedAt = DateTime.UtcNow
         };

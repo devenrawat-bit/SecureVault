@@ -3,6 +3,10 @@
   <Project Path="Auth.Application/Auth.Application.csproj" />
   <Project Path="Auth.Domain/Auth.Domain.csproj" />
   <Project Path="Auth.Infrastructure/Auth.Infrastructure.csproj" />
+  <Project Path="Notification.API/Notification.API.csproj" />
+  <Project Path="Notification.Application/Notification.Application.csproj" />
+  <Project Path="Notification.Domain/Notification.Domain.csproj" />
+  <Project Path="Notification.Infrastructure/Notification.Infrastructure.csproj" />
   <Project Path="Organization.API/Organization.API.csproj" Id="bc2ce1b7-f2ec-4699-8e5e-40932c483c2a" />
   <Project Path="Organization.Application/Organization.Application.csproj" Id="4efe207f-7e26-4fce-a454-5b310ab129e6" />
   <Project Path="Organization.Domain/Organization.Domain.csproj" Id="ba62d97b-80a1-4e37-bf06-fac5c51b4ab2" />

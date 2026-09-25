@@ -67,7 +67,7 @@ public static class DependencyInjection
         //for the rabbit mq settings
         services.Configure<RabbitMqSettings>(
         configuration.GetSection("RabbitMQ")); //this will map the RabbitMqSettings class to the RabbitMQ section in the appsettings.json file
-        services.AddHostedService<RabbitMqConsumer>();
+        services.AddHostedService<RabbitMqConsumer>(); //this will register it as a singleton service(all the hosted service are singleton)
 
         services.AddAuthorization();
 
