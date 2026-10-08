@@ -3,7 +3,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Notification.Application.Interfaces;
 using Notification.Infrastructure.Configuration;
 using Notification.Infrastructure.Services;
-using Resend;
 using System;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
@@ -15,20 +14,10 @@ namespace Notification.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
         {
-            // Implementation for adding infrastructure services
-            services.Configure<ResendOptions>(configuration.GetSection("Resend"));
-            services.AddHttpClient<ResendClient>();
+            services.Configure<SmtpOptions>(
+            configuration.GetSection("Smtp"));
 
-            services.Configure<ResendClientOptions>(options =>
-            {
-                options.ApiToken =
-                    configuration["Resend:apikey"]
-                    ?? throw new InvalidOperationException(
-                        "Resend API key is not configured.");
-            });
-            services.AddTransient<IResend, ResendClient>();
-
-            services.AddTransient<IEmailSender, ResendEmailSender>();
+            services.AddTransient<IEmailSender, SmtpEmailSender>();
             return services;
         }
     }
