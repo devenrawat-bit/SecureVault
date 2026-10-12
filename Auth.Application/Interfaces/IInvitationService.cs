@@ -1,4 +1,5 @@
 ﻿using Auth.Application.DTOs.Invitations;
+using Notification.Infrastructure.Messaging.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,5 +22,7 @@ namespace Auth.Application.Interfaces
         /// <param name="requestorganizationId"></param>
         /// <returns></returns>
         Task<InvitationCreatedResponse> CreateInitialAdminInvitationAsync(CreateInitialAdminInvitationRequest requestorganizationId, Guid OrganizationId);
+
+      
     }
 }

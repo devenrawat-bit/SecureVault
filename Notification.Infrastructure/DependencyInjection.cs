@@ -2,6 +2,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Notification.Application.Interfaces;
 using Notification.Infrastructure.Configuration;
+using Notification.Infrastructure.Messaging;
 using Notification.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,15 @@ namespace Notification.Infrastructure
             services.Configure<SmtpOptions>(
             configuration.GetSection("Smtp"));
 
+            // Configure RabbitMQ settings.
+            services.Configure<RabbitMqSettings>(
+                configuration.GetSection("RabbitMq"));
+
             services.AddTransient<IEmailSender, SmtpEmailSender>();
+            services.AddTransient<IInvitationEmailService, InvitationEmailService>();
+
+            // Start the RabbitMQ consumer when the application starts.
+            services.AddHostedService<RabbitMqConsumer>();
             return services;
         }
     }

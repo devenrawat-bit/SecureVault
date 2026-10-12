@@ -22,36 +22,45 @@ public class AuthService : IAuthService
     public async Task<LoginResponse> LoginAsync(
         LoginRequest request)
     {
-        var user = await _userManager.FindByEmailAsync(request.Email);
-
-        if (user is null)
+        try
         {
-            throw new UnauthorizedAccessException(
-                "Invalid email or password.");
+            var user = await _userManager.FindByEmailAsync(request.Email);
+
+            if (user is null)
+            {
+                throw new UnauthorizedAccessException(
+                    "Invalid email or password.");
+            }
+
+            if (!user.IsActive)
+            {
+                throw new UnauthorizedAccessException(
+                    "User account is inactive.");
+            }
+
+            var passwordValid = await _userManager.CheckPasswordAsync(
+                user,
+                request.Password);
+
+            if (!passwordValid)
+            {
+                throw new UnauthorizedAccessException(
+                    "Invalid email or password.");
+            }
+
+            var accessToken = await _jwtTokenService.GenerateTokenAsync(user);
+
+            return new LoginResponse
+            {
+                AccessToken = accessToken,
+                ExpiresAt = DateTime.UtcNow.AddMinutes(60)
+            };
         }
-
-        if (!user.IsActive)
+        catch (Exception)
         {
-            throw new UnauthorizedAccessException(
-                "User account is inactive.");
+
+            throw;
         }
-
-        var passwordValid = await _userManager.CheckPasswordAsync(
-            user,
-            request.Password);
-
-        if (!passwordValid)
-        {
-            throw new UnauthorizedAccessException(
-                "Invalid email or password.");
-        }
-
-        var accessToken = await _jwtTokenService.GenerateTokenAsync(user);
-
-        return new LoginResponse
-        {
-            AccessToken = accessToken,
-            ExpiresAt = DateTime.UtcNow.AddMinutes(60)
-        };
+       
     }
 }

@@ -11,6 +11,8 @@ namespace Auth.Infrastructure.Messaging.Events
     {
         public Guid OrganizationId { get; set; }
 
+        public string OrganizationName { get; set; } = string.Empty;
+
         public string AdminEmail { get; set; } = string.Empty;
 
         public string AdminFirstName { get; set; } = string.Empty;

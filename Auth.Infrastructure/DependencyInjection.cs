@@ -74,6 +74,8 @@ public static class DependencyInjection
         services.AddScoped<IInvitationService, InvitationService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<JwtTokenService>();
+        services.AddScoped<IPasswordResetService, PasswordResetService>();
+        services.AddSingleton<IEventPublisher, RabbitMqPublisher>();
         return services;
     }
 }

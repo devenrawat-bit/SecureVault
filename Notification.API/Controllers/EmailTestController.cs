@@ -4,9 +4,7 @@ using Notification.Application.Interfaces;
 
 namespace Notification.API.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class EmailTestController : ControllerBase
+    public class EmailTestController : BaseController
     {
         private readonly IEmailSender _emailSender;
         public EmailTestController(IEmailSender emailSender)
@@ -20,7 +18,7 @@ namespace Notification.API.Controllers
         /// <param name="email">To whom the test email should be sent</param>
         /// <param name="cancellationToken"></param>
         /// <returns>A task representing the asynchronous operation</returns>
-        [HttpPost("test")]
+        [HttpPost]
         public async Task<IActionResult> SendTestEmail(
        [FromQuery] string email,
        CancellationToken cancellationToken)
