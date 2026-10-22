@@ -73,6 +73,14 @@ public sealed class RabbitMqPublisher : IEventPublisher
             message.InvitationId);
     }
 
+    #region Publish Password Reset Request
+  
+    /// <summary>
+    /// This method is used to publish the message in the Rabbit MQ queue name  
+    /// </summary>
+    /// <param name="message">The data that will be published on the rabbit mq</param>
+    /// <param name="cancellationToken"></param>
+    /// <returns></returns>
     public async Task PublishPasswordResetRequestedAsync(PasswordResetRequestedMessage message, CancellationToken cancellationToken = default)
     {
         var factory = new ConnectionFactory
@@ -138,4 +146,5 @@ public sealed class RabbitMqPublisher : IEventPublisher
             "Published password-reset event for user {UserId}.",
             message.UserId);
     }
+    #endregion
 }

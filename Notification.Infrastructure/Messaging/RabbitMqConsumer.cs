@@ -57,10 +57,21 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
             await connection.CreateChannelAsync(
                 cancellationToken: stoppingToken);
 
+        #region Initial Admin invitation queue configuration
         const string exchangeName = "securevault.events";
         const string queueName = "notification.invitation-created";
         const string routingKey = "InvitationCreatedEvent";
+        #endregion
 
+        #region Reset Password Queue Configuration
+        // New password-reset queue configuration.
+        const string passwordResetQueueName =
+            "notification.password-reset-requested"; //Our queue name in the 
+        const string passwordResetRoutingKey =
+            "PasswordResetRequestedEvent";
+        #endregion
+
+        #region Invitation Event Consumer 
         //check if the exchange is there or not 
         await channel.ExchangeDeclareAsync(
             exchange: exchangeName,
@@ -181,5 +192,97 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
         await Task.Delay(
             Timeout.Infinite,
             stoppingToken);
+        #endregion
+
+        #region Password Reset Event Consumer
+        // Create a separate consumer for password-reset events.
+        var passwordResetConsumer = new AsyncEventingBasicConsumer(channel);
+
+        passwordResetConsumer.ReceivedAsync += async (_, args) =>
+        {
+            try
+            {
+                // Read the message body from RabbitMQ.
+                var body = args.Body.ToArray();
+
+                var json = Encoding.UTF8.GetString(body);
+
+                // Deserialize the event published by the Auth service.
+                var passwordResetEvent =
+                    JsonSerializer.Deserialize<PasswordResetRequestedEvent>(json);
+
+                // Validate the required event properties.
+                if (passwordResetEvent is null ||
+                    passwordResetEvent.UserId == Guid.Empty ||
+                    string.IsNullOrWhiteSpace(passwordResetEvent.RecipientEmail) ||
+                    string.IsNullOrWhiteSpace(passwordResetEvent.ResetLink))
+                {
+                    _logger.LogWarning(
+                        "Received an invalid password-reset event.");
+
+                    // Reject invalid messages instead of requeueing them indefinitely.
+                    // Configure a dead-letter queue before using this behavior in production.
+                    await channel.BasicNackAsync(
+                        deliveryTag: args.DeliveryTag,
+                        multiple: false,
+                        requeue: false);
+
+                    return;
+                }
+
+                using var scope = _scopeFactory.CreateScope();
+
+                // Resolve the password-reset email service from dependency injection.
+                var passwordResetEmailService =
+                    scope.ServiceProvider
+                        .GetRequiredService<IPasswordResetEmailService>();
+
+                // Send the password-reset email.
+                await passwordResetEmailService.SendPasswordResetEmailAsync(
+                    passwordResetEvent.UserId,
+                    passwordResetEvent.RecipientEmail,
+                    passwordResetEvent.ResetLink,
+                    stoppingToken);
+
+                // Acknowledge the message only after email submission succeeds.
+                await channel.BasicAckAsync(
+                    deliveryTag: args.DeliveryTag,
+                    multiple: false);
+
+                _logger.LogInformation(
+                    "Processed password-reset event for user {UserId}.",
+                    passwordResetEvent.UserId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(
+                    ex,
+                    "Failed to process a password-reset event.");
+
+                // Do not requeue indefinitely; configure bounded retries
+                // and a dead-letter queue before production deployment.
+                await channel.BasicNackAsync(
+                    deliveryTag: args.DeliveryTag,
+                    multiple: false,
+                    requeue: false);
+            }
+        };
+
+        // Start consuming password-reset events.
+        await channel.BasicConsumeAsync(
+            queue: passwordResetQueueName,
+            autoAck: false,
+            consumer: passwordResetConsumer,
+            cancellationToken: stoppingToken);
+
+        _logger.LogInformation(
+            "Notification Service is consuming queue {QueueName}.",
+            passwordResetQueueName);
+
+        //before the received async method above this will run first and create the connection 
+        await Task.Delay(
+            Timeout.Infinite,
+            stoppingToken);
+        #endregion
     }
 }

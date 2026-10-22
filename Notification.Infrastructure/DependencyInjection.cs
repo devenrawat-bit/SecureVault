@@ -24,6 +24,7 @@ namespace Notification.Infrastructure
 
             services.AddTransient<IEmailSender, SmtpEmailSender>();
             services.AddTransient<IInvitationEmailService, InvitationEmailService>();
+            services.AddTransient<IPasswordResetEmailService, PasswordResetEmailService>();
 
             // Start the RabbitMQ consumer when the application starts.
             services.AddHostedService<RabbitMqConsumer>();

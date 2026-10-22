@@ -31,6 +31,13 @@ namespace Auth.Infrastructure.Services
                     "Frontend:BaseUrl configuration is missing.");
         }
 
+        /// <summary>
+        /// This method is used to generate a reset token that is embeded with the url of the reset link, and then publish the data to the rabbit mq 
+        /// </summary>
+        /// <param name="request"> It takes an email from the user that needs the reset password </param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task RequestPasswordResetAsync(
             ForgotPasswordRequest request,
             CancellationToken cancellationToken = default)
@@ -89,7 +96,14 @@ namespace Auth.Infrastructure.Services
                     ex);
             }
         }
-
+        
+        /// <summary>
+        /// This is to Reset the password not for the request sending this will get execute after the reset password request, This method will do the operations that are done for the reset password like matching the password, validating the user ,decode the token and later reset the password for that user in the DB.
+        /// </summary>
+        /// <param name="request"></param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
+        /// <exception cref="InvalidOperationException"></exception>
         public async Task ResetPasswordAsync(
             ResetPasswordRequest request,
             CancellationToken cancellationToken = default)
