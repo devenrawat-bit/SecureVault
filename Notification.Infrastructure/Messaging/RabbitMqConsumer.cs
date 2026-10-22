@@ -13,7 +13,7 @@ using RabbitMQ.Client.Events;
 
 namespace Notification.Infrastructure.Messaging;
 
-public sealed class RabbitMqConsumer : BackgroundService //sealed is used now this class wont be inherited by any other 
+public sealed class RabbitMqConsumer : BackgroundService //sealed is used now this class won't be inherited by any other 
 {
     #region Private Fields
     private readonly RabbitMqSettings _settings;
@@ -66,7 +66,7 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
         #region Reset Password Queue Configuration
         // New password-reset queue configuration.
         const string passwordResetQueueName =
-            "notification.password-reset-requested"; //Our queue name in the 
+            "notification.password-reset-requested"; //Our queue name in the rabbit mq
         const string passwordResetRoutingKey =
             "PasswordResetRequestedEvent";
         #endregion
@@ -188,10 +188,6 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
         _logger.LogInformation(
             "Notification Service is consuming queue {QueueName}.",
             queueName);
-
-        await Task.Delay(
-            Timeout.Infinite,
-            stoppingToken);
         #endregion
 
         #region Password Reset Event Consumer
@@ -274,12 +270,12 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
             autoAck: false,
             consumer: passwordResetConsumer,
             cancellationToken: stoppingToken);
+        //before the received async method above this will run first and create the connection 
 
         _logger.LogInformation(
             "Notification Service is consuming queue {QueueName}.",
             passwordResetQueueName);
 
-        //before the received async method above this will run first and create the connection 
         await Task.Delay(
             Timeout.Infinite,
             stoppingToken);
