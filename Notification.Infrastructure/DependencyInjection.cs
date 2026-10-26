@@ -1,8 +1,10 @@
-﻿using Microsoft.Extensions.Configuration;
+﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Notification.Application.Interfaces;
 using Notification.Infrastructure.Configuration;
 using Notification.Infrastructure.Messaging;
+using Notification.Infrastructure.Persistence;
 using Notification.Infrastructure.Services;
 using System;
 using System.Collections.Generic;
@@ -22,8 +24,12 @@ namespace Notification.Infrastructure
             services.Configure<RabbitMqSettings>(
                 configuration.GetSection("RabbitMq"));
 
+            // Configure the Notification database.
+             services.AddDbContext<NotificationDbContext>(options => options.UseSqlServer( configuration.GetConnectionString("NotificationDb")));
+
             services.AddTransient<IEmailSender, SmtpEmailSender>();
             services.AddTransient<IInvitationEmailService, InvitationEmailService>();
+            services.AddScoped<IEmailDeliveryTracker, EmailDeliveryTracker>();
             services.AddTransient<IPasswordResetEmailService, PasswordResetEmailService>();
 
             // Start the RabbitMQ consumer when the application starts.

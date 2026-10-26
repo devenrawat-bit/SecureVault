@@ -56,6 +56,8 @@ public sealed class RabbitMqPublisher : IEventPublisher
 
         var properties = new BasicProperties
         {
+            // Assign a unique ID to this published event.
+            MessageId = Guid.NewGuid().ToString(),
             ContentType = "application/json",
             DeliveryMode = DeliveryModes.Persistent
         };
@@ -129,6 +131,8 @@ public sealed class RabbitMqPublisher : IEventPublisher
 
         var properties = new BasicProperties
         {
+            // Assign a unique ID to this published event.
+            MessageId = Guid.NewGuid().ToString(),
             ContentType = "application/json",
             DeliveryMode = DeliveryModes.Persistent
         };

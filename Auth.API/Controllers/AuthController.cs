@@ -24,6 +24,12 @@ namespace Auth.API.Controllers
             return Ok(response);
         }
 
+        /// <summary>
+        /// This API Endpoint is used when you forgot your password 
+        /// </summary>
+        /// <param name="request">Enter your email here</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> ForgotPassword(
            [FromBody] ForgotPasswordRequest request,
@@ -50,6 +56,12 @@ namespace Auth.API.Controllers
             }
         }
 
+        /// <summary>
+        /// This API Endpoint is used to Reset your password, from the link that is send with the endpoint forgot password 
+        /// </summary>
+        /// <param name="request">The values from the reset password link</param>
+        /// <param name="cancellationToken"></param>
+        /// <returns></returns>
         [HttpPost]
         public async Task<IActionResult> ResetPassword(
             [FromBody] ResetPasswordRequest request,

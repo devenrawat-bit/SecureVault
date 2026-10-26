@@ -134,13 +134,54 @@ public sealed class RabbitMqConsumer : BackgroundService //sealed is used now th
 
                     return;
                 }
+                // Read the unique message ID assigned by the Auth Service publisher.
+                var messageId = args.BasicProperties.MessageId;
+
+                if (string.IsNullOrWhiteSpace(messageId))
+                {
+                    _logger.LogWarning(
+                        "Received an invitation event without a message ID.");
+
+                    await channel.BasicNackAsync(
+                        deliveryTag: args.DeliveryTag,
+                        multiple: false,
+                        requeue: false);
+
+                    return;
+                }
 
                 using var scope = _scopeFactory.CreateScope();
+
+                // Resolve the email delivery tracker from dependency injection.
+                var emailDeliveryTracker =
+                    scope.ServiceProvider
+                        .GetRequiredService<IEmailDeliveryTracker>();
 
                 var invitationEmailService =
                     scope.ServiceProvider
                         .GetRequiredService<IInvitationEmailService>();
 
+                // Check whether this notification can be processed.
+                var canProcess = await emailDeliveryTracker.CanProcessNotificationAsync(
+                    messageId,
+                    null,
+                    invitationEvent.RecipientEmail,
+                    "Invitation",
+                    stoppingToken);
+
+                if (!canProcess)
+                {
+                    _logger.LogInformation(
+                        "Skipping invitation event {MessageId} because it is already tracked as processed or pending.",
+                        messageId);
+
+                    // Acknowledge the message because this notification should not be processed again.
+                    await channel.BasicAckAsync(
+                        deliveryTag: args.DeliveryTag,
+                        multiple: false);
+
+                    return;
+                }
                 var request = new AdminInvitationEmailRequest
                 {
                     RecipientEmail = invitationEvent.RecipientEmail,
